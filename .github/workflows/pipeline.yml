@@ -69,4 +69,16 @@ jobs:
           path: DevOpsDaysTasks
           name: DevOpsDaysTasks
 
+      # Create ZIP
+      - name: Create ZIP
+        if: ${{ inputs.version }}
+        run: Compress-Archive -Path DevOpsDaysTasks -DestinationPath DevOpsDaysTasks.zip
+
+      - name: Github Release
+        uses: softprops/action-gh-release@v2
+        if: ${{ inputs.version }}
+        with:
+          name: DevOpsDaysTasks
+          tag_name: ${{ inputs.version }}
+          files: DevOpsDaysTasks.zip
 
