@@ -2,6 +2,12 @@ name: Release Pipeline
 
 on:
   push: {}
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Name or version
+        required: true
+        type: string
 
 jobs:
   release-pipeline:
@@ -26,9 +32,9 @@ jobs:
 
       # Problem: Hardcoded Release version
       - name: Publish Build
-        run: dotnet publish -c Release src\DevOpsDaysTasks.UI\ -o DevOpsDaysTasks /p:Version=1.0.0 /p:VersionName=Bobcat
-
-        # Problem: We don't want to use the workshop folder
+        env:
+          VERSION: ${{ inputs.version || '0.0.0' }}
+        run: dotnet publish -c Release src\DevOpsDaysTasks.UI\ -o DevOpsDaysTasks /p:Version=${{ env.VERSION }} /p:VersionName=Bobcat
 
       - name: Checkout external Files
         uses: actions/checkout@v4
@@ -41,7 +47,7 @@ jobs:
           mkdir DevOpsDaysTasks/Templates
           cp ExternalFiles/default-tasks.xml DevOpsDaysTasks/Templates
       
-      - name: Copy Template
+      - name: Copy Help
         run: |
           mkdir DevOpsDaysTasks/Help
           cp ExternalFiles/Help.pdf DevOpsDaysTasks/Help
